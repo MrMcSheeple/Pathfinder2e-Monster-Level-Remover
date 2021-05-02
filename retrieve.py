@@ -1,20 +1,21 @@
 import requests
-from bs4 import BeautifulSoup as Soup
+import pickle
 
 
-class Retrieve:
-    def __init__(self, url):
-        self.url = url
-        req = requests.get(self.url)
-        req_content = req.content.decode()
-        soup = Soup(req_content, 'lxml')
+def get_data():
+    url = "https://raw.githubusercontent.com/jimbarnesrtp/pf2/master/monsters-v2-pf2.json"
+    raw_data = requests.get(url).json()["monsters"]
 
-        self.div = soup.find_all('div', {'class': "article-content"})[0]
-        self.level = soup.find('span', {'class': "monster-level"}).text
-
-    def mod_ac_and_saves(self):
-        print(self.div)
+    return raw_data
 
 
-retrieve = Retrieve("https://pf2.d20pfsrd.com/monster/black-dragon/")
-retrieve.mod_ac_and_saves()
+data = get_data()
+
+names = [d["name"] for d in data]
+data_list = [d for d in data]
+
+pf2e_monsters = dict(zip(names, data_list))
+
+with open('pf2e_bestiary.pickle', 'wb') as f:
+    pickle.dump(pf2e_monsters, f)
+    f.close()
