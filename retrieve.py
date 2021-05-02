@@ -5,7 +5,6 @@ from bs4 import BeautifulSoup as Soup
 class Retrieve:
     def __init__(self, url):
         self.url = url
-
         req = requests.get(self.url)
         req_content = req.content.decode()
         soup = Soup(req_content, 'lxml')
