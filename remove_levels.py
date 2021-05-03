@@ -11,6 +11,7 @@ class RemoveLevels:
         if monster in self.monster_dict:
             self.monster = self.monster_dict[monster]
             self.level = self.monster["level"]
+            print(self.monster)
         else:
             raise KeyError("Monster doesn't exist! Maybe check your spelling?")
 
@@ -36,7 +37,29 @@ class RemoveLevels:
 
         return data['spells']
 
-    def modify_stats(self):
+    def modify_skills(self):
+        data = self.monster
+
+        skill_names = data['skills'][::2]
+        skill_values = data['skills'][1::2]
+
+        ptrn = re.compile('[0-9]+')
+
+        for v in range(len(skill_values)):
+            num = ''.join(skill_values[v][2:4])
+            skill_values[v] = re.sub(ptrn, str(int(num) - self.level), skill_values[v])
+
+        skills = []
+        for n in range(len(skill_names)):
+            skills.append(skill_names[n])
+            skills.append(skill_values[n])
+
+        return skills
+
+    def modify_attacks(self):
+        pass
+
+    def compose(self):
         data = self.monster
 
         saves = re.compile('[0-9]+')
@@ -56,8 +79,13 @@ class RemoveLevels:
             data['spells'] = self.modify_spells()
 
         if data['skills']:
-            pass
+            data['skills'] = self.modify_skills()
+
+        if data['attacks']:
+            data['attacks'] = self.modify_attacks()
+
+        return data
 
 
-level_remover = RemoveLevels("Adult Bronze Dragon")
-level_remover.modify_stats()
+level_remover = RemoveLevels("Lich")
+print(level_remover.compose())
