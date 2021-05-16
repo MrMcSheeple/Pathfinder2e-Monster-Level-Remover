@@ -19,7 +19,7 @@ if not path.exists('pf2e_bestiary.pickle'):
 level_remover = RemoveLevels(args.name)
 # calls the function to nerf the monster, and writes it to yaml format
 # yaml keys are unsorted to prevent alphabetization
-out = yaml.dump(level_remover.compose(), sort_keys=False)
+out = yaml.dump(level_remover.compose(), sort_keys=False, indent=4)
 
 if args.output_file:
     with open(args.output_file, 'w') as f:
