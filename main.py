@@ -11,13 +11,16 @@ parser.add_argument('--output-file', '-f', type=str, help='Optionally output to 
 
 args = parser.parse_args()
 
+# if the pickle file was deleted, regenerate it
 if not path.exists('pf2e_bestiary.pickle'):
     retrieve.write_pickle()
 
 try:
+    # calls the level remover class and sets it to an object
     level_remover = RemoveLevels(args.name)
+    # calls the function to nerf the monster, and writes it to yaml format
+    # yaml keys are unsorted to prevent alphabetization
     out = yaml.dump(level_remover.compose(), sort_keys=False)
-
     if args.output_file:
         with open(args.output_file, 'w') as f:
             f.write(out)

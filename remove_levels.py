@@ -5,10 +5,12 @@ import re
 class RemoveLevels:
     def __init__(self, monster):
         with open('pf2e_bestiary.pickle', 'rb') as f:
+            # loads the pickle file containing the dictionary of all monsters
             self.monster_dict = pickle.load(f)
             f.close()
 
         if monster in self.monster_dict:
+            # if the monster exists get its attributes and level, else throw a KeyError
             self.monster = self.monster_dict[monster]
             self.level = self.monster["level"]
             # print(self.monster)
@@ -40,14 +42,15 @@ class RemoveLevels:
     def modify_skills(self):
         data = self.monster
 
-        skill_names = data['skills'][::2]
-        skill_values = data['skills'][1::2]
+        # splits the list containing skill names and their values into separate lists
+        skill_names, skill_values = data['skills'][::2], data['skills'][1::2]
 
         ptrn = re.compile('[0-9]+')
-
         for v in range(len(skill_values)):
-            num = ''.join(skill_values[v][2:4])
-            skill_values[v] = re.sub(ptrn, str(int(num) - self.level), skill_values[v])
+            num = re.search(ptrn, skill_values[v])
+            if num:
+                print(num)
+                skill_values[v] = re.sub(ptrn, str(int(num.group()) - self.level), skill_values[v])
 
         skills = []
         for n in range(len(skill_names)):
