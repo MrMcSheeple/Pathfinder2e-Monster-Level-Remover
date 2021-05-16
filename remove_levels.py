@@ -154,19 +154,26 @@ class RemoveLevels:
         data = self.monster
 
         saves = re.compile('[0-9]+')
-        rec_know = int(saves.findall(data['recallKnowledge'])[0])
-        perc = int(saves.findall(data['Perception'])[0])
-        ac = int(saves.findall(data['AC'])[0])
-        fort = int(saves.findall(data['Fort'])[0])
-        ref = int(saves.findall(data['Ref'])[0])
-        will = int(saves.findall(data['Will'])[0])
 
-        data['recallKnowledge'] = re.sub(str(rec_know), str(rec_know - abs(self.level)), data['recallKnowledge'])
+        if 'recallKnowledge' in data:
+            rec_know = int(saves.findall(data['recallKnowledge'])[0])
+            data['recallKnowledge'] = re.sub(str(rec_know), str(rec_know - abs(self.level)), data['recallKnowledge'])
+
+        perc = int(saves.findall(data['Perception'])[0])
         data['Perception'] = re.sub(str(perc), str(perc - abs(self.level)), data['Perception'])
+
+        ac = int(saves.findall(data['AC'])[0])
         data['AC'] = re.sub(str(ac), str(ac - abs(self.level)), data['AC'])
-        data['Fort'] = re.sub(str(fort), str(fort - abs(self.level)), data['Fort'])
-        data['Ref'] = re.sub(str(ref), str(ref - abs(self.level)), data['Ref'])
-        data['Will'] = re.sub(str(will), str(will - abs(self.level)), data['Will'])
+
+        fort = saves.search(data['Fort'])
+        if fort:
+            data['Fort'] = re.sub(str(fort), str(int(fort.group()) - abs(self.level)), data['Fort'])
+        ref = saves.search(data['Ref'])
+        if ref:
+            data['Ref'] = re.sub(str(ref), str(int(ref.group()) - abs(self.level)), data['Ref'])
+        will = saves.search(data['Will'])
+        if will:
+            data['Will'] = re.sub(str(will), str(int(will.group()) - abs(self.level)), data['Will'])
 
         # spells are stored as a list of dictionaries containing spells
         # if the spell list is not blank, modify it
