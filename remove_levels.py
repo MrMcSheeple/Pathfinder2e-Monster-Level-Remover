@@ -65,25 +65,32 @@ class RemoveLevels:
 
     def modify_actions(self):
         data = self.monster
-
         ptrn_dc = re.compile('DC [0-9]+')
+        excl_ptrn = re.compile('DC [0-9]+ flat')
 
         for a in data['actions']:
             dc = re.search(ptrn_dc, a['text'])
-            excl_ptrn = re.compile('DC [0-9]+ flat')
-            excl = re.search(excl_ptrn, a['text'])
-
             if dc:
+                excl = re.search(excl_ptrn, a['text'])
                 if excl:
                     continue
-
                 dc_mod = dc.group()
                 dc_dc, dc_val = str(dc_mod)[0:3], str(dc_mod)[3:]
-
                 dc_val = int(dc_val)
                 dc_val -= abs(self.level)
-
                 a['text'] = re.sub(ptrn_dc, dc_dc + str(dc_val), a['text'])
+
+            if 'Effect' in a:
+                eff_dc = re.search(ptrn_dc, a['Effect'])
+                excl = re.search(excl_ptrn, a['Effect'])
+                if excl:
+                    continue
+                print()
+                dc_mod = eff_dc.group()
+                dc_dc, dc_val = str(dc_mod)[0:3], str(dc_mod)[3:]
+                dc_val = int(dc_val)
+                dc_val -= abs(self.level)
+                a['Effect'] = re.sub(ptrn_dc, dc_dc + str(dc_val), a['Effect'])
 
         return data['actions']
 
