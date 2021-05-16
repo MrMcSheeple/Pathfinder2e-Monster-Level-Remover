@@ -24,7 +24,7 @@ class RemoveLevels:
         # spell[:6] -> DC xy therefore spell[4:6] -> xy
         for spell in data['spells']:
             dc = int(spell['text'][4:6])
-            new_dc = " DC {}".format(dc - self.level)
+            new_dc = " DC {}".format(dc - abs(self.level))
             spell['text'] = new_dc + spell['text'][6:]
 
         # replace spell attack bonus
@@ -34,7 +34,7 @@ class RemoveLevels:
                 atk = int(spell['text'][16:18])
             except ValueError:
                 continue
-            new_atk = "attack +{}".format(atk - self.level)
+            new_atk = "attack +{}".format(atk - abs(self.level))
             spell['text'] = spell['text'][:8] + new_atk + spell['text'][18:]
 
         return data['spells']
@@ -50,7 +50,7 @@ class RemoveLevels:
             num = re.search(ptrn, skill_values[v])
             if num:
                 print(num)
-                skill_values[v] = re.sub(ptrn, str(int(num.group()) - self.level), skill_values[v])
+                skill_values[v] = re.sub(ptrn, str(int(num.group()) - abs(self.level)), skill_values[v])
 
         skills = []
         for n in range(len(skill_names)):
@@ -77,7 +77,7 @@ class RemoveLevels:
                 dc_dc, dc_val = str(dc_mod)[0:3], str(dc_mod)[3:]
 
                 dc_val = int(dc_val)
-                dc_val -= self.level
+                dc_val -= abs(self.level)
 
                 a['text'] = re.sub(ptrn_dc, dc_dc + str(dc_val), a['text'])
 
@@ -98,7 +98,7 @@ class RemoveLevels:
                 atk_t, atk_val = str(atk_mod)[0], str(atk_mod)[1:]
 
                 atk_val = int(atk_val)
-                atk_val -= self.level
+                atk_val -= abs(self.level)
 
                 a['text'] = re.sub(ptrn_atk, atk_t + str(atk_val), a['text'])
 
@@ -112,7 +112,7 @@ class RemoveLevels:
                 dc_dc, dc_val = str(dc_mod)[0:3], str(dc_mod)[3:]
 
                 dc_val = int(dc_val)
-                dc_val -= self.level
+                dc_val -= abs(self.level)
 
                 a['text'] = re.sub(ptrn_dc, dc_dc + str(dc_val), a['text'])
 
@@ -129,12 +129,12 @@ class RemoveLevels:
         ref = int(saves.findall(data['Ref'])[0])
         will = int(saves.findall(data['Will'])[0])
 
-        data['recallKnowledge'] = re.sub(str(rec_know), str(rec_know - self.level), data['recallKnowledge'])
-        data['Perception'] = re.sub(str(perc), str(perc - self.level), data['Perception'])
-        data['AC'] = re.sub(str(ac), str(ac - self.level), data['Fort'])
-        data['Fort'] = re.sub(str(fort), str(fort - self.level), data['Fort'])
-        data['Ref'] = re.sub(str(ref), str(ref - self.level), data['Ref'])
-        data['Will'] = re.sub(str(will), str(will - self.level), data['Will'])
+        data['recallKnowledge'] = re.sub(str(rec_know), str(rec_know - abs(self.level)), data['recallKnowledge'])
+        data['Perception'] = re.sub(str(perc), str(perc - abs(self.level)), data['Perception'])
+        data['AC'] = re.sub(str(ac), str(ac - abs(self.level)), data['Fort'])
+        data['Fort'] = re.sub(str(fort), str(fort - abs(self.level)), data['Fort'])
+        data['Ref'] = re.sub(str(ref), str(ref - abs(self.level)), data['Ref'])
+        data['Will'] = re.sub(str(will), str(will - abs(self.level)), data['Will'])
 
         # spells are stored as a list of dictionaries containing spells
         # if the spell list is not blank, modify it
