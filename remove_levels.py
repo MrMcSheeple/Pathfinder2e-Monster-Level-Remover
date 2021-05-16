@@ -17,6 +17,14 @@ class RemoveLevels:
         else:
             raise KeyError("Monster doesn't exist! Maybe check your spelling?")
 
+    def modify_rituals(self, ritual_type):
+        ptrn = re.compile('[0-9]+')
+        if self.monster[ritual_type]:
+            data = self.monster[ritual_type]
+            rituals = int(ptrn.findall(data)[0])
+            data = re.sub(str(rituals), str(rituals - abs(self.level)), data)
+            return data
+
     def modify_spells(self):
         data = self.monster
 
@@ -148,5 +156,14 @@ class RemoveLevels:
 
         if data['attacks']:
             data['attacks'] = self.modify_attacks()
+
+        if 'Rituals' in data:
+            data['Rituals'] = self.modify_rituals('Rituals')
+        elif 'Occult Rituals' in data:
+            data['Occult Rituals'] = self.modify_rituals('Occult Rituals')
+        elif 'Divine Rituals' in data:
+            data['Divine Rituals'] = self.modify_rituals('Divine Rituals')
+        elif 'Primal Rituals' in data:
+            data['Primal Rituals'] = self.modify_rituals('Primal Rituals')
 
         return data
