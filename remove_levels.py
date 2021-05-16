@@ -27,23 +27,20 @@ class RemoveLevels:
 
     def modify_spells(self):
         data = self.monster
+        atk_ptrn = re.compile('[+-][0-9]+')
+        dc_ptrn = re.compile('DC [0-9]+')
 
-        # replace spell DC
-        # spell[:6] -> DC xy therefore spell[4:6] -> xy
         for spell in data['spells']:
-            dc = int(spell['text'][4:6])
-            new_dc = " DC {}".format(dc - abs(self.level))
-            spell['text'] = new_dc + spell['text'][6:]
+            dc = dc_ptrn.findall(spell['text'])
+            atk = atk_ptrn.findall(spell['text'])
 
-        # replace spell attack bonus
-        for spell in data['spells']:
-            try:
-                # get spell attack bonus if specified
-                atk = int(spell['text'][16:18])
-            except ValueError:
-                continue
-            new_atk = "attack +{}".format(atk - abs(self.level))
-            spell['text'] = spell['text'][:8] + new_atk + spell['text'][18:]
+            if dc:
+                new_dc = "DC {}".format(int(dc[0][3:]) - abs(self.level))
+                spell['text'] = re.sub(dc_ptrn, new_dc, spell['text'])
+
+            if atk:
+                new_atk = atk[0][0] + str(int(atk[0][1:]) - abs(self.level))
+                spell['text'] = re.sub(atk_ptrn, new_atk, spell['text'])
 
         return data['spells']
 
@@ -97,8 +94,11 @@ class RemoveLevels:
         ptrn_dc = re.compile('DC [0-9]+')
 
         for a in data['attacks']:
-            atk = re.search(ptrn_atk, a['text'])
-            dc = re.search(ptrn_dc, a['text'])
+            try:
+                atk = re.search(ptrn_atk, a['text'])
+                dc = re.search(ptrn_dc, a['text'])
+            except KeyError:
+                continue
 
             if atk:
                 atk_mod = atk.group()
