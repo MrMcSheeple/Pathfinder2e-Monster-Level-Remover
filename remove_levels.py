@@ -49,7 +49,6 @@ class RemoveLevels:
         for v in range(len(skill_values)):
             num = re.search(ptrn, skill_values[v])
             if num:
-                print(num)
                 skill_values[v] = re.sub(ptrn, str(int(num.group()) - abs(self.level)), skill_values[v])
 
         skills = []
@@ -131,7 +130,7 @@ class RemoveLevels:
 
         data['recallKnowledge'] = re.sub(str(rec_know), str(rec_know - abs(self.level)), data['recallKnowledge'])
         data['Perception'] = re.sub(str(perc), str(perc - abs(self.level)), data['Perception'])
-        data['AC'] = re.sub(str(ac), str(ac - abs(self.level)), data['Fort'])
+        data['AC'] = re.sub(str(ac), str(ac - abs(self.level)), data['AC'])
         data['Fort'] = re.sub(str(fort), str(fort - abs(self.level)), data['Fort'])
         data['Ref'] = re.sub(str(ref), str(ref - abs(self.level)), data['Ref'])
         data['Will'] = re.sub(str(will), str(will - abs(self.level)), data['Will'])
