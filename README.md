@@ -16,3 +16,6 @@ Print the nerfed monster to the console\
 
 Write the nerfed monster to a yaml file\
 `./main.py <name> -f <filename.yaml>`
+
+The entire bestiary can be generated using the tester, but make sure you run the program at least once, so the
+pickle file exists.
