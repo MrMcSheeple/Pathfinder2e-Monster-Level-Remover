@@ -2,12 +2,28 @@ import pickle
 import re
 
 
+class BrokenMonster(Exception):
+    def __init__(self):
+        self.message = ("This monster is broken, and therefore not supported.\n"
+                        "It is either missing too much information to be useable or it is garbled in some way"
+                        "that makes it incompatible with the parsers that work on the rest of the monsters.")
+
+    def __str__(self):
+        return self.message
+
+
 class RemoveLevels:
     def __init__(self, monster):
         with open('pf2e_bestiary.pickle', 'rb') as f:
             # loads the pickle file containing the dictionary of all monsters
             self.monster_dict = pickle.load(f)
             f.close()
+
+        # This list is for statblocks that are missing too much information to be useful
+        # and break the program due to that missing information
+        broken_list = ["Graveknight"]
+        if monster in broken_list:
+            raise BrokenMonster
 
         if monster in self.monster_dict:
             # if the monster exists get its attributes and level, else throw a KeyError
