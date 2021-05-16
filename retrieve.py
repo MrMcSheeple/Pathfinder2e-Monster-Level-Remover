@@ -9,13 +9,14 @@ def get_data():
     return raw_data
 
 
-data = get_data()
+def write_pickle():
+    data = get_data()
 
-names = [d["name"] for d in data]
-data_list = [d for d in data]
+    names = [d["name"] for d in data]
+    data_list = [d for d in data]
 
-pf2e_monsters = dict(zip(names, data_list))
+    pf2e_monsters = dict(zip(names, data_list))
 
-with open('pf2e_bestiary.pickle', 'wb') as f:
-    pickle.dump(pf2e_monsters, f)
-    f.close()
+    with open('pf2e_bestiary.pickle', 'wb') as f:
+        pickle.dump(pf2e_monsters, f)
+        f.close()
