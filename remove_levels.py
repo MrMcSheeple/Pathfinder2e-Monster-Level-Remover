@@ -79,7 +79,7 @@ class RemoveLevels:
 
         skills = []
         for n in range(len(skill_names)):
-            # rebuild the list from the seperate lists containing the names and values
+            # rebuild the list from the separate lists containing the names and values
             skills.append(skill_names[n])
             skills.append(skill_values[n])
 
@@ -125,7 +125,7 @@ class RemoveLevels:
     def modify_attacks(self):
         data = self.monster
 
-        # compiles seperate searches for DCs and Attack Bonuses
+        # compiles separate searches for DCs and Attack Bonuses
         ptrn_atk = re.compile('[+-][0-9]+')
         ptrn_dc = re.compile('DC [0-9]+')
 
@@ -138,7 +138,7 @@ class RemoveLevels:
                 continue
 
             if atk:
-                # seperates the +- from the number, modifies the number, the rebuilds the string
+                # separates the +- from the number, modifies the number, the rebuilds the string
                 atk_mod = atk.group()
                 atk_t, atk_val = str(atk_mod)[0], str(atk_mod)[1:]
 
@@ -174,7 +174,7 @@ class RemoveLevels:
             rec_know = int(saves.findall(data['recallKnowledge'])[0])
             data['recallKnowledge'] = re.sub(str(rec_know), str(rec_know - abs(self.level)), data['recallKnowledge'])
 
-        # grabs the first match, modifies it, and resinserts it.
+        # grabs the first match, modifies it, and reinserts it.
         perc = int(saves.findall(data['Perception'])[0])
         data['Perception'] = re.sub(str(perc), str(perc - abs(self.level)), data['Perception'])
         ac = int(saves.findall(data['AC'])[0])
