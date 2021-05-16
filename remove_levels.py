@@ -35,6 +35,8 @@ class RemoveLevels:
 
     def modify_rituals(self, ritual_type):
         ptrn = re.compile('[0-9]+')
+        # modifies the DC of a ritual. Type only matters for what key it needs to refer to
+        # set this to a variable as all the checking is done in the compose function
         if self.monster[ritual_type]:
             data = self.monster[ritual_type]
             rituals = int(ptrn.findall(data)[0])
@@ -51,10 +53,12 @@ class RemoveLevels:
             atk = atk_ptrn.findall(spell['text'])
 
             if dc:
+                # builds the new DC and rebuilds the string
                 new_dc = "DC {}".format(int(dc[0][3:]) - abs(self.level))
                 spell['text'] = re.sub(dc_ptrn, new_dc, spell['text'])
 
             if atk:
+                # builds the new attack mod and rebuilds the string
                 new_atk = atk[0][0] + str(int(atk[0][1:]) - abs(self.level))
                 spell['text'] = re.sub(atk_ptrn, new_atk, spell['text'])
 
@@ -68,12 +72,14 @@ class RemoveLevels:
 
         ptrn = re.compile('[0-9]+')
         for v in range(len(skill_values)):
+            # loops through and searches for a match. If found, replace the value and rebuild the string
             num = re.search(ptrn, skill_values[v])
             if num:
                 skill_values[v] = re.sub(ptrn, str(int(num.group()) - abs(self.level)), skill_values[v])
 
         skills = []
         for n in range(len(skill_names)):
+            # rebuild the list from the seperate lists containing the names and values
             skills.append(skill_names[n])
             skills.append(skill_values[n])
 
@@ -86,8 +92,11 @@ class RemoveLevels:
 
         for a in data['actions']:
             if 'text' in a:
+                # searches for a match
                 dc = re.search(ptrn_dc, a['text'])
                 if dc:
+                    # excludes flat DCs as they're not to be modified
+                    # if a flat DC is found, skip to the next iteration
                     excl = re.search(excl_ptrn, a['text'])
                     if excl:
                         continue
@@ -98,6 +107,7 @@ class RemoveLevels:
                     a['text'] = re.sub(ptrn_dc, dc_dc + str(dc_val), a['text'])
 
             if 'Effect' in a:
+                # same as above, but for the Effect key
                 eff_dc = re.search(ptrn_dc, a['Effect'])
                 excl = re.search(excl_ptrn, a['Effect'])
                 if eff_dc:
@@ -115,17 +125,20 @@ class RemoveLevels:
     def modify_attacks(self):
         data = self.monster
 
+        # compiles seperate searches for DCs and Attack Bonuses
         ptrn_atk = re.compile('[+-][0-9]+')
         ptrn_dc = re.compile('DC [0-9]+')
 
         for a in data['attacks']:
             try:
+                # searches for matches. If an error is thrown skip to the next iteration
                 atk = re.search(ptrn_atk, a['text'])
                 dc = re.search(ptrn_dc, a['text'])
             except KeyError:
                 continue
 
             if atk:
+                # seperates the +- from the number, modifies the number, the rebuilds the string
                 atk_mod = atk.group()
                 atk_t, atk_val = str(atk_mod)[0], str(atk_mod)[1:]
 
@@ -135,6 +148,7 @@ class RemoveLevels:
                 a['text'] = re.sub(ptrn_atk, atk_t + str(atk_val), a['text'])
 
             if dc:
+                # same as above, but for DCs
                 excl_ptrn = re.compile('DC [0-9]+ flat')
                 excl = re.search(excl_ptrn, a['text'])
                 if excl:
@@ -155,16 +169,18 @@ class RemoveLevels:
 
         saves = re.compile('[0-9]+')
 
+        # checks to see if recallKnowledge exists. It does for most monsters but there are some exceptions
         if 'recallKnowledge' in data:
             rec_know = int(saves.findall(data['recallKnowledge'])[0])
             data['recallKnowledge'] = re.sub(str(rec_know), str(rec_know - abs(self.level)), data['recallKnowledge'])
 
+        # grabs the first match, modifies it, and resinserts it.
         perc = int(saves.findall(data['Perception'])[0])
         data['Perception'] = re.sub(str(perc), str(perc - abs(self.level)), data['Perception'])
-
         ac = int(saves.findall(data['AC'])[0])
         data['AC'] = re.sub(str(ac), str(ac - abs(self.level)), data['AC'])
 
+        # searches to see if the string exists. If it does, modify the number and reinsert
         fort = saves.search(data['Fort'])
         if fort:
             data['Fort'] = re.sub(str(fort), str(int(fort.group()) - abs(self.level)), data['Fort'])
@@ -175,8 +191,8 @@ class RemoveLevels:
         if will:
             data['Will'] = re.sub(str(will), str(int(will.group()) - abs(self.level)), data['Will'])
 
-        # spells are stored as a list of dictionaries containing spells
-        # if the spell list is not blank, modify it
+        # The following keys point to a list or dictionary
+        # The functions called will modify the structure before the data is changed here.
         if data['spells']:
             data['spells'] = self.modify_spells()
 
@@ -189,6 +205,7 @@ class RemoveLevels:
         if data['attacks']:
             data['attacks'] = self.modify_attacks()
 
+        # checks to see if any of the ritual key exists. Using elif is marginally more efficient here.
         if 'Rituals' in data:
             data['Rituals'] = self.modify_rituals('Rituals')
         elif 'Occult Rituals' in data:
