@@ -83,14 +83,15 @@ class RemoveLevels:
             if 'Effect' in a:
                 eff_dc = re.search(ptrn_dc, a['Effect'])
                 excl = re.search(excl_ptrn, a['Effect'])
-                if excl:
-                    continue
-                print()
-                dc_mod = eff_dc.group()
-                dc_dc, dc_val = str(dc_mod)[0:3], str(dc_mod)[3:]
-                dc_val = int(dc_val)
-                dc_val -= abs(self.level)
-                a['Effect'] = re.sub(ptrn_dc, dc_dc + str(dc_val), a['Effect'])
+                if eff_dc:
+                    if excl:
+                        continue
+                    print()
+                    dc_mod = eff_dc.group()
+                    dc_dc, dc_val = str(dc_mod)[0:3], str(dc_mod)[3:]
+                    dc_val = int(dc_val)
+                    dc_val -= abs(self.level)
+                    a['Effect'] = re.sub(ptrn_dc, dc_dc + str(dc_val), a['Effect'])
 
         return data['actions']
 
