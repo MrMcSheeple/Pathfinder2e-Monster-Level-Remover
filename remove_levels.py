@@ -183,14 +183,13 @@ class RemoveLevels:
         # searches to see if the string exists. If it does, modify the number and reinsert
         fort = saves.search(data['Fort'])
         if fort:
-            data['Fort'] = re.sub(str(fort), str(int(fort.group()) - abs(self.level)), data['Fort'])
+            data['Fort'] = re.sub(str(fort.group()), str(int(fort.group()) - abs(self.level)), data['Fort'])
         ref = saves.search(data['Ref'])
         if ref:
-            data['Ref'] = re.sub(str(ref), str(int(ref.group()) - abs(self.level)), data['Ref'])
+            data['Ref'] = re.sub(str(ref.group()), str(int(ref.group()) - abs(self.level)), data['Ref'])
         will = saves.search(data['Will'])
         if will:
-            data['Will'] = re.sub(str(will), str(int(will.group()) - abs(self.level)), data['Will'])
-
+            data['Will'] = re.sub(str(int(will.group())), str(int(will.group()) - abs(self.level)), data['Will'])
         # The following keys point to a list or dictionary
         # The functions called will modify the structure before the data is changed here.
         if data['spells']:
