@@ -151,6 +151,7 @@ class RemoveLevels:
                 # same as above, but for DCs
                 excl_ptrn = re.compile('DC [0-9]+ flat')
                 excl = re.search(excl_ptrn, a['text'])
+
                 if excl:
                     continue
 
